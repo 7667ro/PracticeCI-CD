@@ -19,15 +19,23 @@ pipeline {
         }
       }
     }
+   stage('Log in to Docker Hub') {
+            steps {
+               withCredentials([usernamePassword(credentialsId: 'docker', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+
+                script {
+                    bat "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
+                }
+               }
+            }
+    }
 
     stage('Push to Docker Hub') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'ebf25043-743c-4360-9ed5-5afff8fb1095', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           script {
            
             bat "docker push ${DOCKER_IMAGE}"
           }
-        }
       }
     }
   }
