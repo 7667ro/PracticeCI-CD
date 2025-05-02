@@ -15,7 +15,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          dockerImage = docker.build("${DOCKER_IMAGE}")
+          dockerImage = bat(script: "docker build -t ${DOCKER_IMAGE} .", returnStdout: true).trim()
         }
       }
     }
@@ -24,8 +24,8 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'ebf25043-743c-4360-9ed5-5afff8fb1095', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           script {
-            sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-            sh "docker push ${DOCKER_IMAGE}"
+            bat "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+            bat "docker push ${DOCKER_IMAGE}"
           }
         }
       }
